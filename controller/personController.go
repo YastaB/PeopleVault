@@ -62,3 +62,27 @@ var RetrievePerson = func(w http.ResponseWriter, r *http.Request) {
 	resp["data"] = string(data)
 	toolkit.Respond(w, resp)
 }
+
+var RetrievePeopleWithName = func(w http.ResponseWriter, r *http.Request) {
+	queryParams := r.URL.Query()
+	firstName := queryParams.Get("firstName")
+	lastName := queryParams.Get("lastName")
+
+	fmt.Println("Querying people with FirstName: " + firstName + " LastName: " + lastName)
+
+	peopleList, err := data.RetrievePeopleWithName(firstName, lastName)
+	if err != nil {
+		toolkit.Respond(w, toolkit.Message(false, "Cannot find the person"))
+		return
+	}
+
+	data, err := json.Marshal(&peopleList)
+	if err != nil {
+		toolkit.Respond(w, toolkit.Message(false, "Marshalling error"))
+		return
+	}
+
+	resp := toolkit.Message(true, "success")
+	resp["data"] = string(data)
+	toolkit.Respond(w, resp)
+}

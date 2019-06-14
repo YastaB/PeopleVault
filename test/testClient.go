@@ -52,27 +52,39 @@ func addPerson(clientID string) {
 	fmt.Println(string(body))
 }
 
-func getPerson(personID string, clientID string) {
+func getPerson(personID string, clientID string) string {
+	return performGetRequest(clientID, baseURL+"/"+personID)
+}
+
+func getPeopleWithName(clientID string, firstName string, lastName string) string {
+	return performGetRequest(clientID, baseURL+"?firstName="+firstName+"&lastName="+lastName)
+}
+
+func performGetRequest(clientID string, url string) string {
 	validToken, err := GenerateJWT()
 	if err != nil {
 		fmt.Println("Failed to generate token")
+		return ""
 	}
 
 	client := &http.Client{}
-	req, _ := http.NewRequest("GET", baseURL+"/"+personID, nil)
+	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Set(TOKEN_LABEL, validToken)
 	req.Header.Set(CLIENT_ID_LABEL, clientID)
 
 	res, err := client.Do(req)
 	if err != nil {
 		fmt.Println("Error: %s", err.Error())
+		return ""
 	}
 
 	body, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		fmt.Println(err)
+		return ""
 	}
 	fmt.Println(string(body))
+	return string(body)
 }
 
 func GenerateJWT() (string, error) {
@@ -80,7 +92,7 @@ func GenerateJWT() (string, error) {
 	claims := token.Claims.(jwt.MapClaims)
 
 	claims["authorized"] = true
-	claims["client"] = "Elliot Forbes"
+	//claims["client"] = "Elliot Forbes"
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
 	tokenString, err := token.SignedString(mySigningKey)
@@ -94,5 +106,6 @@ func GenerateJWT() (string, error) {
 
 func main() {
 	addPerson("client1")
+	getPeopleWithName("client1", "Bob", "Fisher")
 	//getPerson("1", "client1")
 }

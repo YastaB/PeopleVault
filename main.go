@@ -18,8 +18,11 @@ func main() {
 	router.HandleFunc(personAPILabel, controller.CreatePerson).Methods("POST")
 	router.HandleFunc(personAPILabel+"/{personID}", controller.DeletePerson).Methods("DELETE")
 	router.HandleFunc(personAPILabel+"/{personID}", controller.RetrievePerson).Methods("GET")
+	router.HandleFunc(personAPILabel, controller.RetrievePeopleWithName).Methods("GET")
+
 	router.Use(controller.JwtAuthentication)
 
+	fmt.Println("Starting server on PORT: " + PORT)
 	err := http.ListenAndServe(":"+PORT, router)
 	if err != nil {
 		fmt.Print(err)
