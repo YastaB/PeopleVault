@@ -6,5 +6,5 @@ type Person struct {
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
 	Age       uint   `json:"age"`
-	Adress    string `json:"adress"`
+	Address   string `json:"adress"`
 }
