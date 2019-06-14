@@ -36,7 +36,7 @@ var JwtAuthentication = func(next http.Handler) http.Handler {
 				return nil, fmt.Errorf("Client ID is not founded")
 			}
 
-			return data.ClientSigningKeys[clientID], nil
+			return []byte(data.ClientSigningKeys[clientID]), nil
 		})
 
 		if err != nil {
