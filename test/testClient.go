@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"time"
 
 	"../model"
@@ -18,21 +19,15 @@ const baseURL = "http://localhost:8001/api/v1/person"
 const CLIENT_ID_LABEL = "Clientid"
 const TOKEN_LABEL = "Token"
 
-func addPerson(clientID string) {
+func addPerson(clientID string, newPerson *model.Person) {
 	validToken, err := GenerateJWT()
 	if err != nil {
 		fmt.Println("Failed to generate token")
 	}
 
 	client := &http.Client{}
-	newPerson := &model.Person{
-		PersonID:  "1",
-		FirstName: "Bob",
-		LastName:  "Fisher",
-		Address:   "USA",
-		Age:       24}
 
-	data, err := json.Marshal(&newPerson)
+	data, err := json.Marshal(newPerson)
 
 	req, _ := http.NewRequest("POST", baseURL, bytes.NewBuffer(data))
 	req.Header.Set(TOKEN_LABEL, validToken)
@@ -52,12 +47,15 @@ func addPerson(clientID string) {
 	fmt.Println(string(body))
 }
 
-func getPerson(personID string, clientID string) string {
+func getPerson(clientID string, personID string) string {
 	return performGetRequest(clientID, baseURL+"/"+personID)
 }
 
 func getPeopleWithName(clientID string, firstName string, lastName string) string {
-	return performGetRequest(clientID, baseURL+"?firstName="+firstName+"&lastName="+lastName)
+	return performGetRequest(clientID, baseURL+"/queryname"+"?firstName="+firstName+"&lastName="+lastName)
+}
+func getPeopleWithAgeRange(clientID string, minAge int, maxAge int) string {
+	return performGetRequest(clientID, baseURL+"/queryage"+"?minAge="+strconv.Itoa(minAge)+"&maxAge="+strconv.Itoa(maxAge))
 }
 
 func performGetRequest(clientID string, url string) string {
@@ -92,7 +90,6 @@ func GenerateJWT() (string, error) {
 	claims := token.Claims.(jwt.MapClaims)
 
 	claims["authorized"] = true
-	//claims["client"] = "Elliot Forbes"
 	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
 
 	tokenString, err := token.SignedString(mySigningKey)
@@ -105,7 +102,23 @@ func GenerateJWT() (string, error) {
 }
 
 func main() {
-	addPerson("client1")
+	newPerson := &model.Person{
+		PersonID:  "1",
+		FirstName: "Bob",
+		LastName:  "Fisher",
+		Address:   "USA",
+		Age:       24}
+
+	newPerson2 := &model.Person{
+		PersonID:  "2",
+		FirstName: "Berkay",
+		LastName:  "Tacyildiz",
+		Address:   "Turkey",
+		Age:       26}
+	addPerson("client1", newPerson)
+	addPerson("client1", newPerson2)
+	getPerson("client1", "1")
+	getPerson("client1", "2")
 	getPeopleWithName("client1", "Bob", "Fisher")
-	//getPerson("1", "client1")
+	getPeopleWithAgeRange("client1", 24, 26)
 }

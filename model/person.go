@@ -5,6 +5,6 @@ type Person struct {
 	PersonID  string `json:"id"`
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
-	Age       uint   `json:"age"`
+	Age       int    `json:"age"`
 	Address   string `json:"adress"`
 }

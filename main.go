@@ -16,9 +16,10 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc(personAPILabel, controller.CreatePerson).Methods("POST")
+	router.HandleFunc(personAPILabel+"/queryname", controller.RetrievePeopleWithName).Methods("GET")
+	router.HandleFunc(personAPILabel+"/queryage", controller.RetrievePeopleWithAgeRange).Methods("GET")
 	router.HandleFunc(personAPILabel+"/{personID}", controller.DeletePerson).Methods("DELETE")
 	router.HandleFunc(personAPILabel+"/{personID}", controller.RetrievePerson).Methods("GET")
-	router.HandleFunc(personAPILabel, controller.RetrievePeopleWithName).Methods("GET")
 
 	router.Use(controller.JwtAuthentication)
 

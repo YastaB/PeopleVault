@@ -54,3 +54,17 @@ func RetrievePeopleWithName(firstName string, lastName string) ([]model.Person, 
 	}
 	return foundedPeople, nil
 }
+
+//RetrievePeopleWithAgeRange retrieves people with included range btw minAge and maxAge
+func RetrievePeopleWithAgeRange(minAge int, maxAge int) ([]model.Person, error) {
+	foundedPeople := []model.Person{}
+	for _, v := range peopleStorage {
+		if v.Age >= minAge && v.Age <= maxAge {
+			foundedPeople = append(foundedPeople, v)
+		}
+	}
+	if len(foundedPeople) == 0 {
+		return foundedPeople, errors.New("specified person does not exists")
+	}
+	return foundedPeople, nil
+}
